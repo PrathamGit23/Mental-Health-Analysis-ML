@@ -30,6 +30,11 @@ This project is a **baseline implementation** that can be extended to:
 
 ---
 
+##DISCLAIMER
+
+This project is for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.
+
+
 ## How to run the project locally
 
 ```bash
@@ -41,7 +46,3 @@ python app.py
 Open your browser and go to:
 
 http://127.0.0.1:5000/
-
-##DISCLAIMER
-
-This project is for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.
