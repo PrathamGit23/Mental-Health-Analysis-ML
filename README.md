@@ -30,7 +30,7 @@ This project is a **baseline implementation** that can be extended to:
 
 ---
 
-##DISCLAIMER
+## DISCLAIMER
 
 This project is for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.
 
