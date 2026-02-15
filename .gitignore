@@ -1,32 +1,15 @@
-# Python
+# dataset
+*.csv
+*.xlsx
+*.ipynb
+
+# python
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
 
-# Virtual env
-venv/
-env/
-.venv/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Model artifacts (optional — keep if large)
-*.pkl
-
-# Database
-*.db
-
-# Environment variables
+# local environment
 .env
+venv/
 
-# VS Code
-.vscode/
-
-# Logs
-*.log
+# system
+.DS_Store
