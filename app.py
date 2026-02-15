@@ -84,18 +84,19 @@ app = Flask(__name__)
 # ------------------ Load model ------------------
 clf = None
 vectorizer = None
+lemmatizer = WordNetLemmatizer()
 
-@app.before_first_request
-def startup_load():
+def load_models():
+    """Load ML models on startup"""
     global clf, vectorizer
     if clf is None:
         print("Preloading ML model...")
         clf = joblib.load("model/logreg_model.pkl")
         vectorizer = joblib.load("model/tfidf_vectorizer.pkl")
+        print("Model loaded successfully!")
 
-
-lemmatizer = WordNetLemmatizer()
-
+# Load models immediately when module is imported
+load_models()
 
 # ------------------ Clean text ------------------
 def clean_text(text):
@@ -112,20 +113,15 @@ def clean_text(text):
 def predict_disorder(text):
     cleaned = clean_text(text)
     vec = vectorizer.transform([cleaned])
-
     probs = clf.predict_proba(vec)[0]
-
     # top 2 classes
     top2 = probs.argsort()[-2:][::-1]
     best = probs[top2[0]]
     second = probs[top2[1]]
-
     pred_class = clf.classes_[top2[0]]
-
     # decision rule
     if best < 0.5 or (best - second) < 0.1:
         return "healthy", best, probs
-
     return pred_class, best, probs
 
 # ------------------ Database ------------------
@@ -133,7 +129,6 @@ def save_prediction(text, label, confidence):
     try:
         conn = get_connection()
         cursor = conn.cursor()
-
         # Detect DB type
         if conn.__class__.__module__ == "sqlite3":
             query = """
@@ -147,11 +142,9 @@ def save_prediction(text, label, confidence):
             VALUES (%s, %s, %s)
             """
             cursor.execute(query, (text, label, float(confidence)))
-
         conn.commit()
         cursor.close()
         conn.close()
-
     except Exception as e:
         print("DB Error:", e)
 
@@ -165,11 +158,12 @@ def api_predict():
     data = request.get_json()
     if not data or "text" not in data:
         return jsonify({"error": "No text provided"}), 400
-
+    
     label, conf, probs = predict_disorder(data["text"])
     save_prediction(data["text"], label, conf)
+    
     info = DISORDER_INFO.get(label, {"symptoms": [], "resources": []})
-
+    
     return jsonify({
         "primary_prediction": {
             "disorder": label,
@@ -195,16 +189,15 @@ def debug_db():
     try:
         conn = get_connection()
         cursor = conn.cursor()
-
         cursor.execute("SELECT id, predicted_label, confidence, created_at FROM predictions ORDER BY id DESC LIMIT 10")
         rows = cursor.fetchall()
-
         cursor.close()
         conn.close()
-
         return {"rows": rows}
-
     except Exception as e:
         return {"error": str(e)}
 
 application = app
+
+if __name__ == "__main__":
+    app.run(debug=True)
