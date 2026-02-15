@@ -114,7 +114,7 @@ def predict_disorder(text):
     pred_class = clf.classes_[top2[0]]
 
     # decision rule
-    if best < 0.5 or (best - second) < 0.15:
+    if best < 0.5 or (best - second) < 0.1:
         return "healthy", best, probs
 
     return pred_class, best, probs
