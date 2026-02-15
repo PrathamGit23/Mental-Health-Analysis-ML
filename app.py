@@ -7,6 +7,9 @@ from nltk.stem import WordNetLemmatizer
 from db import get_connection
 import os
 
+# Configure NLTK data path BEFORE any NLTK operations
+nltk.data.path.append('/opt/render/nltk_data')
+
 print("Loading ML model...")
 
 DISORDER_INFO = {
@@ -84,16 +87,34 @@ app = Flask(__name__)
 # ------------------ Load model ------------------
 clf = None
 vectorizer = None
-lemmatizer = WordNetLemmatizer()
+lemmatizer = None
 
 def load_models():
-    """Load ML models on startup"""
-    global clf, vectorizer
+    """Load ML models and NLTK resources on startup"""
+    global clf, vectorizer, lemmatizer
     if clf is None:
         print("Preloading ML model...")
         clf = joblib.load("model/logreg_model.pkl")
         vectorizer = joblib.load("model/tfidf_vectorizer.pkl")
         print("Model loaded successfully!")
+    
+    if lemmatizer is None:
+        print("Initializing NLTK lemmatizer...")
+        # Download NLTK data if not available
+        try:
+            nltk.data.find('corpora/wordnet')
+        except LookupError:
+            print("Downloading wordnet...")
+            nltk.download('wordnet', download_dir='/opt/render/nltk_data')
+        
+        try:
+            nltk.data.find('corpora/omw-1.4')
+        except LookupError:
+            print("Downloading omw-1.4...")
+            nltk.download('omw-1.4', download_dir='/opt/render/nltk_data')
+        
+        lemmatizer = WordNetLemmatizer()
+        print("Lemmatizer initialized successfully!")
 
 # Load models immediately when module is imported
 load_models()
