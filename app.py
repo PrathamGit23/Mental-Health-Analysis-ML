@@ -7,6 +7,8 @@ import nltk
 from db import get_connection
 import os
 
+print("Loading ML model...")
+
 DISORDER_INFO = {
     "adhd": {
         "symptoms": [
@@ -94,8 +96,15 @@ except LookupError:
 lemmatizer = WordNetLemmatizer()
 
 # ------------------ Load model ------------------
-clf = joblib.load("model/logreg_model.pkl")
-vectorizer = joblib.load("model/tfidf_vectorizer.pkl")
+clf = None
+vectorizer = None
+
+def load_model():
+    global clf, vectorizer
+    if clf is None:
+        print("Initializing model...")
+        clf = joblib.load("model/logreg_model.pkl")
+        vectorizer = joblib.load("model/tfidf_vectorizer.pkl")
 
 # ------------------ Clean text ------------------
 def clean_text(text):
@@ -110,6 +119,7 @@ def clean_text(text):
 
 # ------------------ Predict ------------------
 def predict_disorder(text):
+    load_model()
     cleaned = clean_text(text)
     vec = vectorizer.transform([cleaned])
 
