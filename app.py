@@ -81,20 +81,21 @@ DISORDER_INFO = {
 # ------------------ Flask ------------------
 app = Flask(__name__)
 
-
-lemmatizer = WordNetLemmatizer()
-
-
 # ------------------ Load model ------------------
 clf = None
 vectorizer = None
 
-def load_model():
+@app.before_first_request
+def startup_load():
     global clf, vectorizer
     if clf is None:
-        print("Initializing model...")
+        print("Preloading ML model...")
         clf = joblib.load("model/logreg_model.pkl")
         vectorizer = joblib.load("model/tfidf_vectorizer.pkl")
+
+
+lemmatizer = WordNetLemmatizer()
+
 
 # ------------------ Clean text ------------------
 def clean_text(text):
@@ -109,7 +110,6 @@ def clean_text(text):
 
 # ------------------ Predict ------------------
 def predict_disorder(text):
-    load_model()
     cleaned = clean_text(text)
     vec = vectorizer.transform([cleaned])
 
