@@ -125,16 +125,24 @@ def save_prediction(text, label, confidence):
         conn = get_connection()
         cursor = conn.cursor()
 
-        query = """
-        INSERT INTO predictions (user_text, predicted_label, confidence)
-        VALUES (%s, %s, %s)
-        """
+        # Detect DB type
+        if conn.__class__.__module__ == "sqlite3":
+            query = """
+            INSERT INTO predictions (user_text, predicted_label, confidence)
+            VALUES (?, ?, ?)
+            """
+            cursor.execute(query, (text, label, float(confidence)))
+        else:
+            query = """
+            INSERT INTO predictions (user_text, predicted_label, confidence)
+            VALUES (%s, %s, %s)
+            """
+            cursor.execute(query, (text, label, float(confidence)))
 
-        cursor.execute(query, (text, label, float(confidence)))
         conn.commit()
-
         cursor.close()
         conn.close()
+
     except Exception as e:
         print("DB Error:", e)
 
