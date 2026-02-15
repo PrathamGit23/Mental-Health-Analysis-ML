@@ -2,8 +2,8 @@ from flask import Flask, request, render_template, jsonify
 import joblib
 import re
 import pandas as pd
-from nltk.stem import WordNetLemmatizer
 import nltk
+from nltk.stem import WordNetLemmatizer
 from db import get_connection
 import os
 
@@ -81,19 +81,9 @@ DISORDER_INFO = {
 # ------------------ Flask ------------------
 app = Flask(__name__)
 
-# ------------------ NLTK ------------------
-nltk.data.path.append("/opt/render/nltk_data")
-
-NLTK_DATA = "/opt/render/nltk_data"
-os.makedirs(NLTK_DATA, exist_ok=True)
-
-try:
-    nltk.data.find("corpora/wordnet")
-except LookupError:
-    nltk.download("wordnet", download_dir=NLTK_DATA)
-    nltk.download("omw-1.4", download_dir=NLTK_DATA)
 
 lemmatizer = WordNetLemmatizer()
+
 
 # ------------------ Load model ------------------
 clf = None
