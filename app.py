@@ -80,8 +80,17 @@ DISORDER_INFO = {
 app = Flask(__name__)
 
 # ------------------ NLTK ------------------
-nltk.download("wordnet")
-nltk.download("omw-1.4")
+nltk.data.path.append("/opt/render/nltk_data")
+
+NLTK_DATA = "/opt/render/nltk_data"
+os.makedirs(NLTK_DATA, exist_ok=True)
+
+try:
+    nltk.data.find("corpora/wordnet")
+except LookupError:
+    nltk.download("wordnet", download_dir=NLTK_DATA)
+    nltk.download("omw-1.4", download_dir=NLTK_DATA)
+
 lemmatizer = WordNetLemmatizer()
 
 # ------------------ Load model ------------------
