@@ -168,6 +168,11 @@ def api_predict():
             for cls, p in zip(clf.classes_, probs)
         ]
     })
+
+@app.route("/health")
+def health():
+    return "ok", 200
+
 application = app
 # ------------------ Run ------------------
 if __name__ == "__main__":
