@@ -167,7 +167,7 @@ def api_predict():
             for cls, p in zip(clf.classes_, probs)
         ]
     })
-
+application = app
 # ------------------ Run ------------------
 if __name__ == "__main__":
     app.run(debug=True)
