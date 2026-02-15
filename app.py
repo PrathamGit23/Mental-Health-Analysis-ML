@@ -5,6 +5,7 @@ import pandas as pd
 from nltk.stem import WordNetLemmatizer
 import nltk
 from db import get_connection
+import os
 
 DISORDER_INFO = {
     "adhd": {
@@ -170,4 +171,5 @@ def api_predict():
 application = app
 # ------------------ Run ------------------
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
