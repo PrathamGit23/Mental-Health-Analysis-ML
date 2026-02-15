@@ -173,6 +173,23 @@ def api_predict():
 def health():
     return "ok", 200
 
+@app.route("/debug/db")
+def debug_db():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT id, predicted_label, confidence, created_at FROM predictions ORDER BY id DESC LIMIT 10")
+        rows = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return {"rows": rows}
+
+    except Exception as e:
+        return {"error": str(e)}
+
 application = app
 # ------------------ Run ------------------
 if __name__ == "__main__":
